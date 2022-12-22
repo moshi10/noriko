@@ -8,6 +8,14 @@ export default {
   title: 'TodoList',
 };
 
+const reorder = (list: Todo[], startIndex: number, endIndex: number) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
 export const Usage = () => {
   const [todos, setTodos] = useState<Todo[]>([
     {
@@ -48,5 +56,12 @@ export const Usage = () => {
     ]);
   };
 
-  return <TodoList todos={todos} updateTodo={updateTodo} />;
+  const onDragEnd: React.ComponentProps<typeof TodoList>['onDragEnd'] = (result) => {
+    if (!result.destination) return;
+
+    const newTodos = reorder(todos, result.source.index, result.destination.index);
+    setTodos(newTodos);
+  };
+
+  return <TodoList todos={todos} updateTodo={updateTodo} onDragEnd={onDragEnd} />;
 };
